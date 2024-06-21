@@ -2,6 +2,8 @@
 import pygame
 import sys
 import math
+import random
+import random2
 
 # Window
 HEIGHT, WIDTH = 500, 800
@@ -12,11 +14,16 @@ COUNTER_W,COUNTER_H = 100, 85
 
 # Bird w/h (120,100)px
 PLAYER_W , PLAYER_H = 50, 50
-PL_X,PL_Y = PADDING * 4, HEIGHT / 2
-
+PL_X,PL_Y = WIDTH/10, HEIGHT / 2
 
 GRAVITY = 1
 FLAP_FORCE = -10
+
+# pipes
+PYPE_H,PYPE_W = HEIGHT, 80
+PYPE_VEL = 10
+PYPE_X = WIDTH-PADDING*2
+PYPE_GAP = 100
 
 # Colour
 BLACK = (0,0,0)
