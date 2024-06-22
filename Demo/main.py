@@ -1,7 +1,10 @@
 from setting import *
+from pypes import Pype
 
 class Main:
     def __init__(self):
+        # modules
+        self.pype = Pype()
         # general
         pygame.init()
 
@@ -27,9 +30,7 @@ class Main:
         self.counter_surface = pygame.Surface((COUNTER_W,COUNTER_H))
         self.counter_rect = self.counter_surface.get_rect(topright=(WIDTH - PADDING * 2,PADDING * 2))
 
-        # Pypes
-        self.topPypes = []
-        self.bottomPypes = []
+##--------------------------------------GAME LOOP--------------------------------------------------
 
     def run(self):
         gameStart = False
@@ -37,9 +38,8 @@ class Main:
 
         pl_vel_y = 0
         y = PL_Y
-        while True:
-            pygame.time.delay(100)
 
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -85,60 +85,12 @@ class Main:
                 pygame.draw.rect(self.window, ORANGE_RED, (PL_X, y, PLAYER_W,PLAYER_H))
 
             if gameStart: # drawing pipes
-                self.get_pypes()
-                self.drawing_pipes()
+                self.pype.get_pypes(self.window)
 
             # Update the display
             pygame.display.update()
             self.clock.tick(60)
-
-    def get_pypes(self):
-        # Add initial objects
-        if len(self.bottomPypes) == 0 :
-            random_y = random.randrange(0,HEIGHT,PYPE_GAP)
-            self.bottomPypes.append({
-                'x' : PYPE_X,
-                'y' : random_y,
-                'height' : HEIGHT - random_y
-            })
-
-        if len(self.topPypes) == 0:
-            self.topPypes.append({
-                'x' : PYPE_X,
-                'y' :  0 ,
-                'height' : self.bottomPypes[0]['y']
-            })
-
-        for num , pype in enumerate(self.bottomPypes): # bottom part of pypes
-            if pype['x'] == WIDTH - PYPE_W*4:
-                random_y = random.randrange(0,HEIGHT,PYPE_GAP)
-                self.bottomPypes.append({
-                    'x' : PYPE_X,
-                    'y' : random_y,
-                    'height' : HEIGHT - random_y
-                })
-            if pype['x'] <= 0: # checks if pype has reached the end of the screenp
-                self.bottomPypes.pop(num)
-                break
-            pype['x'] -= PYPE_VEL
-
-        for num , pype in enumerate(self.topPypes): # Top part of types
-            if pype['x'] == WIDTH - PYPE_W*4:
-                self.topPypes.append({
-                    'x' : PYPE_X,
-                    'y' : 0,
-                    'height' : self.bottomPypes[num]['y']
-                })
-            if pype['x'] <= 0: # checks if pype has reached the end of the screenp
-                self.topPypes.pop(num)
-                break
-            pype['x'] -= PYPE_VEL
-
-    def drawing_pipes(self):
-        for bottom in self.bottomPypes:
-            pygame.draw.rect(self.window, GREEN, (bottom['x'], bottom['y'] , PYPE_W,bottom['height']))
-        for top in self.topPypes:
-            pygame.draw.rect(self.window, GREEN, (top['x'], top['y'] , PYPE_W,top['height']))
+            pygame.time.delay(50)
 
 if __name__ == '__main__':
     main = Main()
