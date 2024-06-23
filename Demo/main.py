@@ -5,6 +5,7 @@ class Main:
     def __init__(self):
         # modules
         self.pype = Pype()
+
         # general
         pygame.init()
 
@@ -17,18 +18,19 @@ class Main:
 
         # font intit
         pygame.font.init()
-        self.font = pygame.font.Font(None, 36)
+        self.font = pygame.font.Font(None, 40)
+        self.counter_font = pygame.font.Font(None, 30)
 
         # Game start Font surface
         self.startText_surface = self.font.render("Press 'SHIFT' to Start...",True,DARK_ORANGE)
         self.text_rect = self.startText_surface.get_rect(center=(WIDTH/2,HEIGHT/2))
 
-        # Player Death Font surface
-        self.endText_surface = self.font.render("YOU DIED",True,RED)
+        # point counter text surface
+        self.counter_surface = self.counter_font.render(f'{self.pype.pointCounter}',True,BLACK)
+        self.counter_rect = self.counter_surface.get_rect(topright=(WIDTH-PADDING,PADDING))
 
-        # counter surface
-        self.counter_surface = pygame.Surface((COUNTER_W,COUNTER_H))
-        self.counter_rect = self.counter_surface.get_rect(topright=(WIDTH - PADDING * 2,PADDING * 2))
+        # Player death Font surface
+        self.endText_surface = self.font.render("YOU DIED",True,RED)
 
 ##--------------------------------------GAME LOOP--------------------------------------------------
 
@@ -40,6 +42,7 @@ class Main:
         y = PL_Y
 
         while True:
+            self.counter_surface = self.counter_font.render(f'{self.pype.pointCounter}',True,BLACK)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -50,7 +53,6 @@ class Main:
                 if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
                     print('--- Game Start ---')
                     gameStart = True
-                    death = False
 
                 if keys[pygame.K_SPACE] and gameStart:
                     pl_vel_y = FLAP_FORCE
@@ -60,6 +62,7 @@ class Main:
                 pl_vel_y += GRAVITY
                # Update bird position
                 y += pl_vel_y
+
                 # Check for collisions with the ground
                 if y + PLAYER_H > HEIGHT:
                     y = HEIGHT - PLAYER_H
@@ -73,10 +76,6 @@ class Main:
 
             ## display ##
             self.window.fill(LIGHT_BLUE)
-            self.counter_surface.fill(WHITE)
-
-            # self.window.blit(self.counter_surface,self.counter_rect)
-            pygame.draw.rect(self.window, YELLOW, (PL_X, y, PLAYER_W,PLAYER_W))
 
             if not gameStart and not death:
                 self.window.blit(self.startText_surface,self.text_rect)
@@ -85,7 +84,16 @@ class Main:
                 pygame.draw.rect(self.window, ORANGE_RED, (PL_X, y, PLAYER_W,PLAYER_H))
 
             if gameStart: # drawing pipes
-                self.pype.get_pypes(self.window)
+                collition = self.pype.get_pypes(self.window,y)
+                if collition:
+                    death = True
+                    gameStart = False
+
+            # Player (Bird rect)
+            pygame.draw.rect(self.window, YELLOW, (PL_X, y, PLAYER_W,PLAYER_W))
+
+            # Point Counter
+            self.window.blit(self.counter_surface,self.counter_rect)
 
             # Update the display
             pygame.display.update()
